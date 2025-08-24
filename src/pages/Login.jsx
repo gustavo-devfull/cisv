@@ -1,4 +1,3 @@
-
 import { useForm } from 'react-hook-form';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -10,7 +9,30 @@ export default function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (e) {
-      setError('root', { message: e.message });
+      // Tenta extrair a mensagem do backend REST:
+      let serverMsg;
+      try {
+        // Alguns erros vêm em e.customData._serverResponse (string JSON)
+        const raw = e?.customData?._serverResponse;
+        if (raw) serverMsg = JSON.parse(raw)?.error?.message;
+      } catch {}
+
+      const map = {
+        'auth/invalid-email': 'E-mail inválido.',
+        'auth/user-disabled': 'Usuário desabilitado.',
+        'auth/user-not-found': 'Usuário não encontrado.',
+        'auth/wrong-password': 'Senha incorreta.',
+        'EMAIL_NOT_FOUND': 'Usuário não encontrado.',
+        'INVALID_PASSWORD': 'Senha incorreta.',
+        'OPERATION_NOT_ALLOWED': 'Login por e-mail/senha não está habilitado no Firebase.',
+        'INVALID_EMAIL': 'E-mail inválido.',
+        'USER_DISABLED': 'Usuário desabilitado.',
+      };
+      const key = serverMsg || e.code || e.message;
+      const msg = map[key] || 'Falha no login. Verifique e-mail/senha.';
+      setError('root', { message: msg });
+      // Para diagnóstico local:
+      console.warn('[Auth] erro no login:', { code: e.code, serverMsg, raw: e });
     }
   };
 
@@ -25,8 +47,8 @@ export default function Login() {
         </div>
         <div className="mb-3">
           <label className="form-label">Senha</label>
-          <input className="form-control" type="password" {...register('password', { required: true })} />
-          {errors.password && <div className="text-danger small">Informe a senha</div>}
+          <input className="form-control" type="password" {...register('password', { required: true, minLength: 6 })} />
+          {errors.password && <div className="text-danger small">Informe a senha (mín. 6 chars)</div>}
         </div>
         {errors.root && <div className="alert alert-danger">{errors.root.message}</div>}
         <button className="btn btn-primary w-100" type="submit">Entrar</button>

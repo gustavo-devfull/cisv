@@ -1,4 +1,4 @@
-// src/pages/EventForm.jsx
+// src/pages/EventEditor.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
@@ -8,25 +8,25 @@ import { db } from '../firebase';
 import LotsEditor from '../components/LotsEditor';
 
 const TIPOS = [
-  { value: 'Village',      label: 'Village' },
-  { value: 'StepUp',       label: 'Step Up' },
-  { value: 'Interchange',  label: 'Intercâmbio' },
+  { value: 'Village', label: 'Village' },
+  { value: 'StepUp', label: 'Step Up' },
+  { value: 'Interchange', label: 'Intercâmbio' },
   { value: 'YouthMeeting', label: 'Youth Meeting' },
-  { value: 'SeminarCamp',  label: 'Seminar Camp' },
-  { value: 'IPP',          label: 'IPP' },
-  { value: 'Mosaic',       label: 'Mosaic' },
-  { value: 'JB',           label: 'JB' },
+  { value: 'SeminarCamp', label: 'Seminar Camp' },
+  { value: 'IPP', label: 'IPP' },
+  { value: 'Mosaic', label: 'Mosaic' },
+  { value: 'JB', label: 'JB' },
 ];
 
 const STATUS = [
-  { value: 'draft',    label: 'Rascunho' },
-  { value: 'open',     label: 'Inscrições Abertas' },
-  { value: 'closed',   label: 'Encerrado' },
+  { value: 'draft', label: 'Rascunho' },
+  { value: 'open', label: 'Inscrições Abertas' },
+  { value: 'closed', label: 'Encerrado' },
   { value: 'archived', label: 'Arquivado' },
 ];
 
-export default function EventForm() {
-  const { id } = useParams(); // 'new' ou id de evento
+export default function EventEditor() {
+  const { id } = useParams();           // 'new' ou um id real
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -50,8 +50,8 @@ export default function EventForm() {
           setForm({
             title: data.title || '',
             type: data.type || TIPOS[0].value,
-            startDate: (data.startDate || '').slice?.(0,10) || '',
-            endDate:   (data.endDate   || '').slice?.(0,10) || '',
+            startDate: (data.startDate || '').slice(0,10),
+            endDate: (data.endDate || '').slice(0,10),
             location: data.location || '',
             status: data.status || 'draft',
             description: data.description || '',
@@ -71,13 +71,13 @@ export default function EventForm() {
 
     const payload = {
       ...form,
-      // Se preferir Timestamp, converta aqui:
+      // Se preferir Timestamp, converta aqui
       // startDate: Timestamp.fromDate(new Date(form.startDate)),
-      // endDate:   Timestamp.fromDate(new Date(form.endDate)),
+      // endDate: Timestamp.fromDate(new Date(form.endDate)),
       updatedAt: serverTimestamp(),
     };
 
-    if (!id || id === 'new') {
+    if (id === 'new' || !id) {
       await addDoc(collection(db, 'events'), {
         ...payload,
         createdAt: serverTimestamp(),

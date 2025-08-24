@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -35,63 +34,65 @@ export default function RegistrantForm() {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container-fluid">
       <div className="row g-4">
         <div className="col-lg-8">
-          <h1 className="h4 mb-3">{isNew ? 'Novo Inscrito' : 'Editar Inscrito'}</h1>
-          <form onSubmit={handleSubmit(onSubmit)} className="card p-4 shadow-sm">
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label">Nome</label>
-                <input className="form-control" {...register('firstName', { required: true })} />
+          <div className="card p-4 shadow-sm">
+            <h1 className="h5 mb-3">{isNew ? 'Novo Inscrito' : 'Editar Inscrito'}</h1>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label className="form-label">Nome</label>
+                  <input className="form-control" {...register('firstName', { required: true })} />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Sobrenome</label>
+                  <input className="form-control" {...register('lastName', { required: true })} />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">Nascimento</label>
+                  <input type="date" className="form-control" {...register('birthDate')} />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">Telefone</label>
+                  <input className="form-control" {...register('phone')} />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">E-mail</label>
+                  <input type="email" className="form-control" {...register('email')} />
+                </div>
+                <div className="col-12">
+                  <label className="form-label">Endereço</label>
+                  <input className="form-control" {...register('address.street')} placeholder="Rua, número" />
+                </div>
+                <div className="col-md-4">
+                  <input className="form-control" {...register('address.city')} placeholder="Cidade" />
+                </div>
+                <div className="col-md-4">
+                  <input className="form-control" {...register('address.state')} placeholder="Estado" />
+                </div>
+                <div className="col-md-4">
+                  <input className="form-control" {...register('address.country')} placeholder="País" />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Responsável</label>
+                  <input className="form-control" {...register('guardian.name')} />
+                </div>
+                <div className="col-md-6">
+                  <label className="form-label">Contato do Responsável</label>
+                  <input className="form-control" {...register('guardian.phone')} />
+                </div>
+                <div className="col-12">
+                  <label className="form-label">Observações</label>
+                  <textarea rows="3" className="form-control" {...register('notes')} />
+                </div>
               </div>
-              <div className="col-md-6">
-                <label className="form-label">Sobrenome</label>
-                <input className="form-control" {...register('lastName', { required: true })} />
+              <div className="d-flex gap-2 mt-4">
+                <button className="btn btn-primary" type="submit">Salvar</button>
+                <Link to="/registrants" className="btn btn-outline-light">Cancelar</Link>
               </div>
-              <div className="col-md-4">
-                <label className="form-label">Nascimento</label>
-                <input type="date" className="form-control" {...register('birthDate')} />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label">Telefone</label>
-                <input className="form-control" {...register('phone')} />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label">E-mail</label>
-                <input type="email" className="form-control" {...register('email')} />
-              </div>
-              <div className="col-12">
-                <label className="form-label">Endereço</label>
-                <input className="form-control" {...register('address.street')} placeholder="Rua, número" />
-              </div>
-              <div className="col-md-4">
-                <input className="form-control" {...register('address.city')} placeholder="Cidade" />
-              </div>
-              <div className="col-md-4">
-                <input className="form-control" {...register('address.state')} placeholder="Estado" />
-              </div>
-              <div className="col-md-4">
-                <input className="form-control" {...register('address.country')} placeholder="País" />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Responsável</label>
-                <input className="form-control" {...register('guardian.name')} />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Contato do Responsável</label>
-                <input className="form-control" {...register('guardian.phone')} />
-              </div>
-              <div className="col-12">
-                <label className="form-label">Observações</label>
-                <textarea rows="3" className="form-control" {...register('notes')} />
-              </div>
-            </div>
-            <div className="d-flex gap-2 mt-4">
-              <button className="btn btn-primary" type="submit">Salvar</button>
-              <Link to="/registrants" className="btn btn-outline-secondary">Cancelar</Link>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
         <div className="col-lg-4">
           {!isNew && (
@@ -100,12 +101,12 @@ export default function RegistrantForm() {
                 <h6 className="text-muted">Eventos já frequentados</h6>
                 <ul className="list-group list-group-flush">
                   {history.map(h => (
-                    <li key={h.id} className="list-group-item">
+                    <li key={h.id} className="list-group-item bg-transparent text-white">
                       <div className="fw-semibold">{h.role} — {h.status}</div>
                       <small className="text-muted">{h.eventId?.split('/')[1]}</small>
                     </li>
                   ))}
-                  {!history.length && <li className="list-group-item">Nenhum registro</li>}
+                  {!history.length && <li className="list-group-item bg-transparent text-muted">Nenhum registro</li>}
                 </ul>
               </div>
             </div>
