@@ -1,4 +1,4 @@
-// src/App.jsx
+import PublicRegistration from "./pages/PublicRegistration"// src/App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AuthProvider from './auth/AuthProvider';
 import PrivateRoute from './auth/PrivateRoute';
