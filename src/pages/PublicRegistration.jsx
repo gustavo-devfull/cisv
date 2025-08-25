@@ -1,5 +1,5 @@
 // src/pages/PublicRegistration.jsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
@@ -43,8 +43,8 @@ export default function PublicRegistration() {
     // 1) Cria a inscrição pendente
     const regPayload = {
       eventId: eventIdParam ? `events/${eventIdParam}` : null,
-      status: "pending", // 🔵 Pendente
-      role: "participant", // padrão (ajuste se quiser expor no formulário)
+      status: "pending", // Pendente
+      role: "participant", // padrão
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       origin: "public-form",
@@ -52,9 +52,7 @@ export default function PublicRegistration() {
     const regRef = await addDoc(collection(db, "registrations"), regPayload);
 
     // 2) Salva o questionário como subdocumento
-    // Guardamos também os "metadados" básicos do inscrito:
     const questionnaire = {
-      // Cabeçalho básico
       participante: {
         nome: data.participante_nome || "",
         sexo: data.participante_sexo || "",
@@ -64,7 +62,6 @@ export default function PublicRegistration() {
         { nome: data.resp1_nome || "", tel: data.resp1_tel || "" },
         { nome: data.resp2_nome || "", tel: data.resp2_tel || "" },
       ],
-      // Ambiente familiar
       ambiente_familiar: {
         quem_mora: data.af_quem_mora || "",
         irmaos: { possui: data.af_irmaos || "", contexto: data.af_irmaos_ctx || "" },
@@ -73,21 +70,18 @@ export default function PublicRegistration() {
         obedece_ordens: { valor: data.af_obedece || "", contexto: data.af_obedece_ctx || "" },
         outras_questoes: { valor: data.af_outras || "", contexto: data.af_outras_ctx || "" },
       },
-      // Ambiente externo
       ambiente_externo: {
         atividades: data.ae_atividades || "",
         relacao_turma: data.ae_turma || "",
         apoio_escolar: { valor: data.ae_apoio || "", contexto: data.ae_apoio_ctx || "" },
       },
-      // Histórico fisiológico
       historico_fisiologico: {
         sono: data.hf_sono || "",
         sonambulismo: { valor: data.hf_sonambulismo || "", contexto: data.hf_sonambulismo_ctx || "" },
         alimentacao: { valor: data.hf_alimentacao || "", contexto: data.hf_alimentacao_ctx || "" },
         recusa_alimentos: data.hf_recusa || "",
-        intestino: data.hf_intestino || "", // regular, prisao_de_ventre, solto, inconstante
+        intestino: data.hf_intestino || "",
       },
-      // Pessoal
       pessoal: {
         ja_viajou_sem_familia: { valor: data.p_javiajou || "", dias: data.p_javiajou_dias || "" },
         enjoos_viagem: { valor: data.p_enjoo || "", contexto: data.p_enjoo_ctx || "" },
@@ -114,7 +108,6 @@ export default function PublicRegistration() {
         situacoes_atuais: { valor: data.p_situacao || "", contexto: data.p_situacao_ctx || "" },
         como_lida: data.p_como_lida || "",
       },
-      // Necessidades específicas
       necessidades_especificas: {
         tipos: {
           auditiva: !!data.ne_auditiva,
@@ -128,18 +121,16 @@ export default function PublicRegistration() {
         possui: { valor: data.ne_possui || "", contexto: data.ne_possui_ctx || "" },
         outras_questoes: { valor: data.ne_outras || "", contexto: data.ne_outras_ctx || "" },
       },
-      // aceite/declaração
       declaracao: {
         reconhece_veracidade: !!data.decl_true,
         data_assinatura: data.decl_data || "",
       },
-      // rastros
       createdAt: serverTimestamp(),
     };
 
     await setDoc(doc(db, "registrations", regRef.id, "questionnaire", "info"), questionnaire);
 
-    // 3) mensagem de sucesso simples
+    // 3) mensagem de sucesso
     setRegCode(regRef.id);
     setSent(true);
   };
@@ -171,7 +162,7 @@ export default function PublicRegistration() {
           {eventTitle ? <>Para o evento: <strong>{eventTitle}</strong></> : "Sem evento vinculado"}
         </div>
         <p className="small text-muted">
-          As informações a seguir são confidenciais e usadas para o cuidado e bem-estar do(a) participante. {/* ver doc */} :contentReference[oaicite:0]{index=0}
+          As informações a seguir são confidenciais e usadas para o cuidado e bem-estar do(a) participante.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>

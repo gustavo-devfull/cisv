@@ -15,29 +15,36 @@ export default function Layout({ children }) {
         style={{ width: 260 }}
       >
         <div className="d-flex align-items-center justify-content-between mb-4">
-          <Link to="/" className="h5 mb-0 text-decoration-none">CISV Connect</Link>
+          <Link to="/" className="h5 mb-0 text-decoration-none d-flex align-items-center gap-1">
+            <span className="material-symbols-outlined">diversity_3</span>
+            CISV Connect
+          </Link>
         </div>
 
         {user && (
           <ul className="nav nav-pills flex-column gap-1">
             <li className="nav-item">
-              <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
-                🏠 Home
+              <NavLink to="/" end className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+                <span className="material-symbols-outlined">home</span>
+                Home
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/events" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
-                📅 Eventos
+              <NavLink to="/events" className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+                <span className="material-symbols-outlined">event</span>
+                Eventos
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/registrants" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
-                👤 Inscritos
+              <NavLink to="/registrants" className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+                <span className="material-symbols-outlined">group</span>
+                Inscritos
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/registrations" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
-                🧾 Inscrições
+              <NavLink to="/registrations" className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+                <span className="material-symbols-outlined">assignment</span>
+                Inscrições
               </NavLink>
             </li>
           </ul>
@@ -53,28 +60,41 @@ export default function Layout({ children }) {
           <div className="container-fluid d-flex align-items-center gap-2">
             {/* Toggle sidebar (mobile) */}
             <button
-              className="btn btn-outline-secondary d-md-none"
+              className="btn btn-outline-secondary d-md-none d-flex align-items-center gap-1"
               onClick={() => setOpen((v) => !v)}
-              aria-label="Alternar menu"
+              aria-label="Alternar menu lateral"
             >
-              ☰
+              <span className="material-symbols-outlined">menu</span>
+              Menu
             </button>
 
-            <input
-              className="form-control"
-              placeholder="Buscar eventos, inscritos..."
-            />
+            {/* Busca */}
+            <div className="input-group">
+              <span className="input-group-text bg-white">
+                <span className="material-symbols-outlined">search</span>
+              </span>
+              <input
+                className="form-control"
+                placeholder="Buscar eventos, inscritos..."
+                aria-label="Buscar"
+              />
+            </div>
 
             <div className="ms-auto d-flex align-items-center gap-2">
               {user ? (
                 <>
-                  <span className="small text-muted">{user.email}</span>
-                  <button className="btn btn-outline-secondary btn-sm" onClick={logout}>
+                  <span className="small text-muted d-none d-sm-inline">{user.email}</span>
+                  <button
+                    className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+                    onClick={logout}
+                  >
+                    <span className="material-symbols-outlined">logout</span>
                     Sair
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="btn btn-primary btn-sm">
+                <Link to="/login" className="btn btn-primary btn-sm d-flex align-items-center gap-1">
+                  <span className="material-symbols-outlined">login</span>
                   Entrar
                 </Link>
               )}

@@ -1,4 +1,3 @@
-// src/pages/Events.jsx
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
@@ -24,18 +23,17 @@ const norm = (s) =>
 
 const labelFromValue = (val) => TIPOS.find(t => t.value === val)?.label ?? val;
 
-// status → badge
+// status → badge classes
 const statusBadge = (status) => {
   const map = {
-    open:     { text: "Inscrições Abertas", cls: "bg-primary-subtle text-primary-emphasis" },
-    draft:    { text: "Rascunho",            cls: "bg-secondary-subtle text-secondary-emphasis" },
-    closed:   { text: "Encerrado",           cls: "bg-dark-subtle text-dark-emphasis" },
-    archived: { text: "Arquivado",           cls: "bg-dark-subtle text-dark-emphasis" }
+    open:     { text: "Inscrições Abertas", icon: "event_available", cls: "text-primary" },
+    draft:    { text: "Rascunho",            icon: "draft",           cls: "text-secondary" },
+    closed:   { text: "Encerrado",           icon: "event_busy",      cls: "text-danger" },
+    archived: { text: "Arquivado",           icon: "inventory_2",     cls: "text-muted" }
   };
-  return map[status] || { text: String(status || "—"), cls: "bg-secondary-subtle text-secondary-emphasis" };
+  return map[status] || { text: String(status || "—"), icon: "help", cls: "text-secondary" };
 };
 
-/** Helpers */
 const fmtBRDate = (val) => {
   if (!val) return '—';
   const s = String(val);
@@ -48,8 +46,6 @@ const fmtBRL = (n) => (Number(n) || 0).toLocaleString('pt-BR', { style: 'currenc
 const todayISO = () => new Date().toISOString().slice(0,10);
 const isInRange = (iso, start, end) => start && end && start <= iso && iso <= end;
 const getCurrentLot = (lots = [], today = todayISO()) => lots.find(l => isInRange(today, l.startDate, l.endDate));
-const getNextLot = (lots = [], today = todayISO()) =>
-  [...lots].filter(l => l.startDate && l.startDate > today).sort((a,b) => a.startDate.localeCompare(b.startDate))[0];
 
 export default function Events() {
   const [rows, setRows] = useState([]);
@@ -119,74 +115,100 @@ export default function Events() {
           const lots = Array.isArray(e.registrationLots) ? e.registrationLots : [];
           const hasLots = lots.length > 0;
           const current = hasLots ? getCurrentLot(lots) : null;
-          const next = hasLots && !current ? getNextLot(lots) : null;
 
           return (
             <div className="col-md-6 col-xl-4" key={e.id}>
               <div className="card h-100 p-3">
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
-                    <div className="small text-muted">{displayType(e.type)}</div>
+                    <div className="small text-muted d-flex align-items-center">
+                      <span className="material-symbols-outlined me-1">category</span>
+                      {displayType(e.type)}
+                    </div>
                     <h5 className="mb-1">
                       {e.title}{' '}
-                      {/* 🆕 Badge “Sem lotes” ao lado do título quando não houver lotes */}
                       {!hasLots && <span className="badge text-bg-secondary align-middle ms-1">Sem lotes</span>}
                     </h5>
 
-                    {/* Datas do evento (BR) */}
-                    <div className="small text-muted">
-                      {fmtBRDate(e.startDate)} → {fmtBRDate(e.endDate)}
+                    {/* Datas do evento */}
+                    <div className="small text-muted d-flex align-items-center">
+                      <span className="material-symbols-outlined me-1">calendar_month</span>
+                      <span><strong>{fmtBRDate(e.startDate)}</strong> → <strong>{fmtBRDate(e.endDate)}</strong></span>
                     </div>
 
-                    {/* Local (se houver) */}
-                    {e.location && <div className="small text-muted">📍 {e.location}</div>}
+                    {/* Local */}
+                    {e.location && (
+                      <div className="small text-muted d-flex align-items-center">
+                        <span className="material-symbols-outlined me-1">location_on</span>
+                        {e.location}
+                      </div>
+                    )}
 
-                    {/* Lotes de inscrição */}
+                    {/* Lotes */}
                     {hasLots ? (
-                      <div className="mt-2">
+                      <div className="mt-3">
+                        {/* Lote vigente em destaque */}
                         {current ? (
-                          <div className="small">
-                            <span className="badge text-bg-success me-2">Lote atual</span>
-                            <strong>{current.name}</strong> — {fmtBRL(current.priceBRL)}
-                            {' '}· {fmtBRDate(current.startDate)}–{fmtBRDate(current.endDate)}
-                          </div>
-                        ) : next ? (
-                          <div className="small">
-                            <span className="badge text-bg-warning me-2">Próximo lote</span>
-                            <strong>{next.name}</strong> — {fmtBRL(next.priceBRL)}
-                            {' '}· {fmtBRDate(next.startDate)}–{fmtBRDate(next.endDate)}
+                          <div className="border rounded p-2 mb-2 shadow-sm">
+                            <div className="d-flex align-items-center mb-1">
+                              <span className="badge text-bg-success me-2">Lote vigente</span>
+                              <strong>{current.name}</strong>
+                            </div>
+                            <div className="small">
+                              <span className="material-symbols-outlined me-1 align-middle">sell</span>
+                              {fmtBRL(current.priceBRL)}
+                            </div>
+                            <div className="small d-flex align-items-center">
+                              <span className="material-symbols-outlined me-1">calendar_today</span>
+                              <strong>{fmtBRDate(current.startDate)}</strong> – <strong>{fmtBRDate(current.endDate)}</strong>
+                            </div>
                           </div>
                         ) : (
-                          <div className="small text-muted">Nenhum lote vigente.</div>
+                          <div className="small text-muted mb-2 d-flex align-items-center">
+                            <span className="material-symbols-outlined me-1">schedule</span>
+                            Nenhum lote vigente no momento.
+                          </div>
                         )}
 
-                        {/* Linha compacta com todos os lotes */}
-                        <div className="small mt-1">
-                          {lots.map((l, i) => (
-                            <span key={i} className="me-2">
-                              {l.name}: {fmtBRL(l.priceBRL)}
-                            </span>
-                          ))}
+                        {/* Demais lotes, um por linha */}
+                        <div className="small">
+                          {lots
+                            .filter(l => !current || l.name !== current.name)
+                            .map((l, idx) => (
+                              <div key={idx} className="py-1 border-top">
+                                <div className="d-flex align-items-center">
+                                  <span className="material-symbols-outlined me-1">layers</span>
+                                  <strong className="me-2">{l.name}</strong>
+                                  <span className="text-muted">{fmtBRL(l.priceBRL)}</span>
+                                </div>
+                                <div className="text-muted d-flex align-items-center">
+                                  <span className="material-symbols-outlined me-1">calendar_today</span>
+                                  {fmtBRDate(l.startDate)} – {fmtBRDate(l.endDate)}
+                                </div>
+                              </div>
+                            ))}
                         </div>
                       </div>
                     ) : (
-                      /* 🆕 Aviso discreto quando não há lotes */
-                      <div className="small mt-2 px-2 py-1 rounded bg-warning-subtle text-warning-emphasis">
+                      <div className="small mt-2 px-2 py-1 rounded bg-warning-subtle text-warning-emphasis d-flex align-items-center">
+                        <span className="material-symbols-outlined me-1">warning</span>
                         Adicione <strong>lotes de inscrição</strong> para abrir e comunicar valores e prazos.
                       </div>
                     )}
                   </div>
 
-                  <span className={`badge rounded-pill ${b.cls}`}>{b.text}</span>
+                  <span className={`d-flex align-items-center ${b.cls}`}>
+  <span className="material-symbols-outlined me-1">{b.icon}</span>
+  {b.text}
+</span>
+
                 </div>
 
                 <p className="mt-2 mb-3">{(e.description || '—').slice(0, 120)}</p>
 
                 <div className="d-flex gap-2 mt-auto">
                   <Link to={`/events/${e.id}`} className="btn btn-sm btn-danger">Editar</Link>
-                  <Link to={`/registrations?event=${e.id}`} className="btn btn-sm btn-primary">
-                    Gerenciar inscrições
-                  </Link>
+                  <Link to={`/registrations?event=${e.id}`} className="btn btn-sm btn-primary">Gerenciar inscrições</Link>
                 </div>
               </div>
             </div>
