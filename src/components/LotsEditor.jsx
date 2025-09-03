@@ -9,28 +9,36 @@ const DEFAULT_LOTS = [
 
 export default function LotsEditor({ value, onChange }) {
   useEffect(() => {
-    if (!value || !Array.isArray(value) || value.length === 0) {
-      onChange(DEFAULT_LOTS);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!value || !Array.isArray(value)) onChange([]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateLot = (idx, field, v) => {
-    const next = [...value];
+    const next = [...(value || [])];
     next[idx] = { ...next[idx], [field]: field === 'priceBRL' ? Number(v) : v };
     onChange(next);
   };
 
-  const addLot = () => onChange([...(value || []), { name: '', startDate: '', endDate: '', priceBRL: 0 }]);
-  const removeLot = (idx) => onChange((value || []).filter((_, i) => i !== idx));
+  const addLot = () =>
+    onChange([...(value || []), { name: '', startDate: '', endDate: '', priceBRL: 0 }]);
+
+  const removeLot = (idx) =>
+    onChange((value || []).filter((_, i) => i !== idx));
+
+  const fillDefault = () => onChange(DEFAULT_LOTS);
 
   return (
     <div className="card p-3">
       <div className="d-flex align-items-center mb-2">
         <h6 className="mb-0">Lotes de inscrição</h6>
-        <button type="button" className="btn btn-sm btn-outline-primary ms-auto" onClick={addLot}>
-          + Adicionar lote
-        </button>
+        <div className="ms-auto d-flex gap-2">
+          <button type="button" className="btn btn-sm btn-outline-secondary" onClick={fillDefault}>
+            Preencher 3 lotes (exemplo)
+          </button>
+          <button type="button" className="btn btn-sm btn-outline-primary" onClick={addLot}>
+            + Adicionar lote
+          </button>
+        </div>
       </div>
 
       {(value || []).map((lot, idx) => (
@@ -39,7 +47,7 @@ export default function LotsEditor({ value, onChange }) {
             <label className="form-label">Nome</label>
             <input
               className="form-control"
-              value={lot.name}
+              value={lot.name || ''}
               onChange={(e)=>updateLot(idx, 'name', e.target.value)}
               placeholder="Ex.: 1º Lote"
             />

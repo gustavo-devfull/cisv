@@ -2,6 +2,7 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 import { useState } from "react";
+import logoCisv from "../assets/CISV_logo_moderno.jpg"; // 🔹 import do logo
 
 export default function Layout({ children }) {
   const { user, logout } = useAuth();
@@ -14,39 +15,83 @@ export default function Layout({ children }) {
         className={`sidebar p-3 border-end ${open ? "" : "d-none d-md-block"}`}
         style={{ width: 260 }}
       >
-        <div className="d-flex align-items-center justify-content-between mb-4">
-          <Link to="/" className="h5 mb-0 text-decoration-none d-flex align-items-center gap-1">
-            <span className="material-symbols-outlined">diversity_3</span>
-            CISV Connect
+        <div className="d-flex align-items-center justify-content-center mb-4">
+          <Link
+            to="/"
+            className="d-flex align-items-center justify-content-center text-decoration-none"
+            style={{ height: 120 }}
+          >
+            <img
+              src={logoCisv}
+              alt="CISV"
+              style={{ height: 120, width: "auto", mixBlendMode: "multiply",  }}
+            />
           </Link>
         </div>
 
         {user && (
           <ul className="nav nav-pills flex-column gap-1">
             <li className="nav-item">
-              <NavLink to="/" end className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+              <NavLink
+                to="/"
+                end
+                className={({ isActive }) =>
+                  `nav-link d-flex align-items-center gap-2 ${
+                    isActive ? "active" : ""
+                  }`
+                }
+              >
                 <span className="material-symbols-outlined">home</span>
                 Home
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/events" className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+              <NavLink
+                to="/events"
+                className={({ isActive }) =>
+                  `nav-link d-flex align-items-center gap-2 ${
+                    isActive ? "active" : ""
+                  }`
+                }
+              >
                 <span className="material-symbols-outlined">event</span>
                 Eventos
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/registrants" className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+              <NavLink
+                to="/registrants"
+                className={({ isActive }) =>
+                  `nav-link d-flex align-items-center gap-2 ${
+                    isActive ? "active" : ""
+                  }`
+                }
+              >
                 <span className="material-symbols-outlined">group</span>
                 Inscritos
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/registrations" className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+              <NavLink
+                to="/registrations"
+                className={({ isActive }) =>
+                  `nav-link d-flex align-items-center gap-2 ${
+                    isActive ? "active" : ""
+                  }`
+                }
+              >
                 <span className="material-symbols-outlined">assignment</span>
                 Inscrições
               </NavLink>
             </li>
+
+            <li className="nav-item">
+  <NavLink to="/form-links" className={({ isActive }) => `nav-link d-flex align-items-center gap-2 ${isActive ? "active" : ""}`}>
+    <span className="material-symbols-outlined">link</span>
+    Links de formulário
+  </NavLink>
+</li>
+
           </ul>
         )}
 
@@ -83,7 +128,9 @@ export default function Layout({ children }) {
             <div className="ms-auto d-flex align-items-center gap-2">
               {user ? (
                 <>
-                  <span className="small text-muted d-none d-sm-inline">{user.email}</span>
+                  <span className="small text-muted d-none d-sm-inline">
+                    {user.email}
+                  </span>
                   <button
                     className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
                     onClick={logout}
@@ -93,7 +140,10 @@ export default function Layout({ children }) {
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="btn btn-primary btn-sm d-flex align-items-center gap-1">
+                <Link
+                  to="/login"
+                  className="btn btn-primary btn-sm d-flex align-items-center gap-1"
+                >
                   <span className="material-symbols-outlined">login</span>
                   Entrar
                 </Link>
