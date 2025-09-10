@@ -40,7 +40,11 @@ export default function GuestRegister() {
       });
       nav(`/guest/form?token=${token}`, { replace: true });
     } catch (e) {
-      setErr("Falha ao criar conta. Verifique os dados.");
+      if (e.code === 'auth/email-already-in-use') {
+        setErr("Este e-mail já está em uso. Se você já tem uma conta, por favor, faça login.");
+      } else {
+        setErr("Falha ao criar conta. Verifique os dados.");
+      }
       console.warn(e);
     }
   };

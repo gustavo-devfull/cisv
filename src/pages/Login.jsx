@@ -1,13 +1,16 @@
 import { useForm } from 'react-hook-form';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const { register, handleSubmit, formState: { errors }, setError } = useForm();
+  const navigate = useNavigate();
 
   const onSubmit = async ({ email, password }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      navigate('/');
     } catch (e) {
       // Tenta extrair a mensagem do backend REST:
       let serverMsg;
